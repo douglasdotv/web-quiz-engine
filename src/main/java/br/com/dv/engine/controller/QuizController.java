@@ -1,10 +1,12 @@
 package br.com.dv.engine.controller;
 
 import br.com.dv.engine.dto.AnswerSubmissionResponse;
-import br.com.dv.engine.dto.QuizResponse;
 import br.com.dv.engine.service.QuizService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/quizzes")
 @RestController
@@ -14,12 +16,6 @@ public class QuizController {
 
     public QuizController(QuizService quizService) {
         this.quizService = quizService;
-    }
-
-    @GetMapping
-    public ResponseEntity<QuizResponse> getQuiz() {
-        QuizResponse response = quizService.getQuiz();
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping
