@@ -6,6 +6,8 @@ import br.com.dv.engine.dto.QuizResponse;
 
 public interface QuizService {
 
+    QuizResponse getQuizById(Integer id);
+
     QuizResponse addQuiz(QuizRequest quiz);
 
     AnswerSubmissionResponse submitAnswer(Integer answerIndex);

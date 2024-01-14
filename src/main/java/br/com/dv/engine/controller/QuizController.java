@@ -17,6 +17,12 @@ public class QuizController {
         this.quizService = quizService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<QuizResponse> getQuizById(@PathVariable Integer id) {
+        QuizResponse response = quizService.getQuizById(id);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<QuizResponse> addQuiz(@RequestBody QuizRequest request) {
         QuizResponse response = quizService.addQuiz(request);
