@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,13 @@ public class QuizServiceImpl implements QuizService {
 
     private final AtomicInteger idCounter = new AtomicInteger(INITIAL_QUIZ_ID);
     private final Map<Integer, Quiz> quizzes = new ConcurrentHashMap<>();
+
+    @Override
+    public List<QuizResponse> getAllQuizzes() {
+        return quizzes.values().stream()
+                .map(quiz -> new QuizResponse(quiz.getId(), quiz.getTitle(), quiz.getText(), quiz.getOptions()))
+                .toList();
+    }
 
     @Override
     public QuizResponse getQuizById(Integer id) {

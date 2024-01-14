@@ -7,6 +7,8 @@ import br.com.dv.engine.service.QuizService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api/quizzes")
 @RestController
 public class QuizController {
@@ -15,6 +17,12 @@ public class QuizController {
 
     public QuizController(QuizService quizService) {
         this.quizService = quizService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<QuizResponse>> getAllQuizzes() {
+        List<QuizResponse> response = quizService.getAllQuizzes();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
