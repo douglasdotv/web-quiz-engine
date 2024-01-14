@@ -6,7 +6,7 @@ import br.com.dv.engine.service.QuizService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/quiz")
+@RequestMapping("/api/quizzes")
 @RestController
 public class QuizController {
 
