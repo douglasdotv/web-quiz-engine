@@ -37,9 +37,10 @@ public class QuizController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<AnswerSubmissionResponse> submitAnswer(@RequestParam(name = "answer") Integer answerIndex) {
-        AnswerSubmissionResponse response = quizService.submitAnswer(answerIndex);
+    @PostMapping("/{id}/solve")
+    public ResponseEntity<AnswerSubmissionResponse> submitAnswer(@PathVariable Integer id,
+                                                                 @RequestParam(name = "answer") Integer answerIndex) {
+        AnswerSubmissionResponse response = quizService.submitAnswer(id, answerIndex);
         return ResponseEntity.ok(response);
     }
 

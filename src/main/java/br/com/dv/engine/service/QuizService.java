@@ -14,6 +14,6 @@ public interface QuizService {
 
     QuizResponse addQuiz(QuizRequest quiz);
 
-    AnswerSubmissionResponse submitAnswer(Integer answerIndex);
+    AnswerSubmissionResponse submitAnswer(Integer id, Integer answerIndex);
 
 }

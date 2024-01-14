@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class QuizServiceImpl implements QuizService {
 
-    private static final Integer CORRECT_ANSWER_INDEX = 2;
     private static final int INITIAL_QUIZ_ID = 1;
     private static final String CORRECT_FEEDBACK = "Congratulations, you're right!";
     private static final String INCORRECT_FEEDBACK = "Wrong answer! Please try again.";
@@ -59,10 +58,16 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public AnswerSubmissionResponse submitAnswer(Integer answerIndex) {
-        boolean isCorrect = answerIndex != null && answerIndex.equals(CORRECT_ANSWER_INDEX);
-        String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
-        return new AnswerSubmissionResponse(isCorrect, feedback);
+    public AnswerSubmissionResponse submitAnswer(Integer id, Integer answerIndex) {
+        Quiz quiz = quizzes.get(id);
+
+        if (quiz != null) {
+            boolean isCorrect = answerIndex != null && answerIndex.equals(quiz.getAnswerIndex());
+            String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
+            return new AnswerSubmissionResponse(isCorrect, feedback);
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, QUIZ_NOT_FOUND_MESSAGE);
     }
 
 }
