@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,6 +18,6 @@ public class Quiz {
 
     private List<String> options;
 
-    private Integer answerIndex;
+    private Set<Integer> answerIndices;
 
 }
