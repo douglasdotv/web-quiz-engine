@@ -1,5 +1,6 @@
 package br.com.dv.engine.service;
 
+import br.com.dv.engine.dto.AnswerSubmissionRequest;
 import br.com.dv.engine.dto.AnswerSubmissionResponse;
 import br.com.dv.engine.dto.QuizRequest;
 import br.com.dv.engine.dto.QuizResponse;
@@ -14,6 +15,6 @@ public interface QuizService {
 
     QuizResponse addQuiz(QuizRequest quiz);
 
-    AnswerSubmissionResponse submitAnswer(Integer id, Integer answerIndex);
+    AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer);
 
 }

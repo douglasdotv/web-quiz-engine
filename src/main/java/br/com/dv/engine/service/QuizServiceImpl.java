@@ -1,5 +1,6 @@
 package br.com.dv.engine.service;
 
+import br.com.dv.engine.dto.AnswerSubmissionRequest;
 import br.com.dv.engine.dto.AnswerSubmissionResponse;
 import br.com.dv.engine.dto.QuizRequest;
 import br.com.dv.engine.dto.QuizResponse;
@@ -60,11 +61,13 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public AnswerSubmissionResponse submitAnswer(Integer id, Integer answerIndex) {
+    public AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer) {
         Quiz quiz = quizzes.get(id);
 
         if (quiz != null) {
-            boolean isCorrect = answerIndex != null && answerIndex.equals(quiz.getAnswerIndex());
+            Set<Integer> correctAnswerIndices = quiz.getAnswerIndices();
+            Set<Integer> submittedAnswerIndices = getUniqueAnswerIndices(answer.answerIndices());
+            boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
             String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
             return new AnswerSubmissionResponse(isCorrect, feedback);
         }
@@ -81,6 +84,10 @@ public class QuizServiceImpl implements QuizService {
             return uniqueAnswerIndices;
         }
         return Collections.emptySet();
+    }
+
+    private boolean verifyAnswer(Set<Integer> correctAnswerIndices, Set<Integer> submittedAnswerIndices) {
+        return correctAnswerIndices.equals(submittedAnswerIndices);
     }
 
 }

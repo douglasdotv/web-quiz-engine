@@ -1,5 +1,6 @@
 package br.com.dv.engine.controller;
 
+import br.com.dv.engine.dto.AnswerSubmissionRequest;
 import br.com.dv.engine.dto.AnswerSubmissionResponse;
 import br.com.dv.engine.dto.QuizRequest;
 import br.com.dv.engine.dto.QuizResponse;
@@ -40,8 +41,8 @@ public class QuizController {
 
     @PostMapping("/{id}/solve")
     public ResponseEntity<AnswerSubmissionResponse> submitAnswer(@PathVariable Integer id,
-                                                                 @RequestParam(name = "answer") Integer answerIndex) {
-        AnswerSubmissionResponse response = quizService.submitAnswer(id, answerIndex);
+                                                                 @RequestBody AnswerSubmissionRequest request) {
+        AnswerSubmissionResponse response = quizService.submitAnswer(id, request);
         return ResponseEntity.ok(response);
     }
 
