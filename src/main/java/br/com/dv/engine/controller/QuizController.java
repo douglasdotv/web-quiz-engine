@@ -4,6 +4,7 @@ import br.com.dv.engine.dto.AnswerSubmissionResponse;
 import br.com.dv.engine.dto.QuizRequest;
 import br.com.dv.engine.dto.QuizResponse;
 import br.com.dv.engine.service.QuizService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class QuizController {
     }
 
     @PostMapping
-    public ResponseEntity<QuizResponse> addQuiz(@RequestBody QuizRequest request) {
+    public ResponseEntity<QuizResponse> addQuiz(@RequestBody @Valid QuizRequest request) {
         QuizResponse response = quizService.addQuiz(request);
         return ResponseEntity.ok(response);
     }
