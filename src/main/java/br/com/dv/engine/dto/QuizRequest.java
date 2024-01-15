@@ -9,6 +9,6 @@ public record QuizRequest(
         String text,
         List<String> options,
         @JsonProperty("answer")
-        Integer answerIndex
+        List<Integer> answerIndices
 ) {
 }
