@@ -30,4 +30,8 @@ public class Quiz {
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<Integer> answerIndices;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser author;
+
 }
