@@ -38,6 +38,12 @@ public class QuizExceptionHandler {
         return getResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(EmailAlreadyTakenException.class)
+    public ResponseEntity<CustomError> handleEmailAlreadyTaken(EmailAlreadyTakenException ex,
+                                                               HttpServletRequest request) {
+        return getResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
     private ResponseEntity<CustomError> getResponseEntity(HttpStatus status, String message,
                                                           HttpServletRequest request) {
         CustomError error = new CustomError(status, message, request.getRequestURI(), Instant.now());
