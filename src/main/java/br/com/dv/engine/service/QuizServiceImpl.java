@@ -91,7 +91,7 @@ public class QuizServiceImpl implements QuizService {
     public void deleteQuizById(Integer id) {
         Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (!isQuizAuthor(quiz)) {
+        if (isNotQuizAuthor(quiz)) {
             throw new QuizNotOwnedByUserException();
         }
 
@@ -105,7 +105,7 @@ public class QuizServiceImpl implements QuizService {
 
         Quiz currQuiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (!isQuizAuthor(currQuiz)) {
+        if (isNotQuizAuthor(currQuiz)) {
             throw new QuizNotOwnedByUserException();
         }
 
@@ -144,9 +144,9 @@ public class QuizServiceImpl implements QuizService {
         return correctAnswerIndices.equals(submittedAnswerIndices);
     }
 
-    private boolean isQuizAuthor(Quiz quiz) {
+    private boolean isNotQuizAuthor(Quiz quiz) {
         AppUser authenticatedUser = getAuthenticatedUser();
-        return authenticatedUser.equals(quiz.getAuthor());
+        return !authenticatedUser.equals(quiz.getAuthor());
     }
 
 }
