@@ -24,23 +24,18 @@ public class UserServiceImpl implements UserService {
     public void registerUser(UserRegistrationRequest userRegistration) {
         String email = userRegistration.email();
 
-        if (isEmailTaken(email)) {
+        userRepository.findByEmail(email).ifPresent(user -> {
             throw new EmailAlreadyTakenException(email);
-        }
+        });
 
         String password = userRegistration.password();
         String encodedPassword = passwordEncoder.encode(password);
 
         AppUser user = new AppUser();
-
         user.setEmail(email);
         user.setPassword(encodedPassword);
 
         userRepository.save(user);
-    }
-
-    private boolean isEmailTaken(String email) {
-        return userRepository.findByEmail(email).isPresent();
     }
 
 }

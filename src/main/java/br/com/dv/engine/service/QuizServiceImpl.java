@@ -48,14 +48,9 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public QuizResponse getQuizById(Integer id) {
-        Optional<Quiz> quizOptional = quizRepository.findById(id);
-
-        if (quizOptional.isPresent()) {
-            Quiz quiz = quizOptional.get();
-            return new QuizResponse(quiz.getId(), quiz.getTitle(), quiz.getText(), quiz.getOptions());
-        }
-
-        throw new QuizNotFoundException();
+        return quizRepository.findById(id)
+                .map(quiz -> new QuizResponse(quiz.getId(), quiz.getTitle(), quiz.getText(), quiz.getOptions()))
+                .orElseThrow(QuizNotFoundException::new);
     }
 
     @Override
@@ -80,52 +75,37 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer) {
-        Optional<Quiz> quizOptional = quizRepository.findById(id);
+        Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (quizOptional.isPresent()) {
-            Quiz quiz = quizOptional.get();
+        Set<Integer> correctAnswerIndices = quiz.getAnswerIndices();
+        Set<Integer> submittedAnswerIndices = getUniqueAnswerIndices(answer.answerIndices());
 
-            Set<Integer> correctAnswerIndices = quiz.getAnswerIndices();
-            Set<Integer> submittedAnswerIndices = getUniqueAnswerIndices(answer.answerIndices());
+        boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
+        String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
 
-            boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
-            String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
-
-            return new AnswerSubmissionResponse(isCorrect, feedback);
-        }
-
-        throw new QuizNotFoundException();
+        return new AnswerSubmissionResponse(isCorrect, feedback);
     }
 
     @Override
     @Transactional
     public void deleteQuizById(Integer id) {
-        Optional<Quiz> quizOptional = quizRepository.findById(id);
+        Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
 
-        if (quizOptional.isPresent()) {
-            Quiz quiz = quizOptional.get();
-
-            if (!isQuizAuthor(quiz)) {
-                throw new QuizNotOwnedByUserException();
-            }
-
-            quiz.getAuthor().removeQuiz(quiz);
-        } else {
-            throw new QuizNotFoundException();
+        if (!isQuizAuthor(quiz)) {
+            throw new QuizNotOwnedByUserException();
         }
+
+        quiz.getAuthor().removeQuiz(quiz);
     }
 
     private AppUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();
 
-        Optional<AppUser> userOptional = userRepository.findByEmail(authenticatedEmail);
-
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        }
-
-        throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_TEMPLATE, authenticatedEmail));
+        return userRepository.findByEmail(authenticatedEmail)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format(USER_NOT_FOUND_TEMPLATE, authenticatedEmail
+                        )));
     }
 
     private Set<Integer> getUniqueAnswerIndices(List<Integer> answerIndices) {

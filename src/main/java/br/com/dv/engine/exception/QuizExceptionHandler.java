@@ -26,12 +26,6 @@ public class QuizExceptionHandler {
         return getResponseEntity(HttpStatus.BAD_REQUEST, errorMessages.toString(), request);
     }
 
-    @ExceptionHandler(QuizNotFoundException.class)
-    public ResponseEntity<CustomError> handleQuizNotFound(QuizNotFoundException ex,
-                                                          HttpServletRequest request) {
-        return getResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), request);
-    }
-
     @ExceptionHandler(DuplicateAnswerIndicesException.class)
     public ResponseEntity<CustomError> handleDuplicateAnswerIndices(DuplicateAnswerIndicesException ex,
                                                                     HttpServletRequest request) {
@@ -48,6 +42,12 @@ public class QuizExceptionHandler {
     public ResponseEntity<CustomError> handleQuizNotOwnedByUser(QuizNotOwnedByUserException ex,
                                                                 HttpServletRequest request) {
         return getResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(QuizNotFoundException.class)
+    public ResponseEntity<CustomError> handleQuizNotFound(QuizNotFoundException ex,
+                                                          HttpServletRequest request) {
+        return getResponseEntity(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
     private ResponseEntity<CustomError> getResponseEntity(HttpStatus status, String message,
