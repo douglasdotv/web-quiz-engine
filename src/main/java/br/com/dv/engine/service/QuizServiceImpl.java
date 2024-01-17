@@ -98,6 +98,27 @@ public class QuizServiceImpl implements QuizService {
         quiz.getAuthor().removeQuiz(quiz);
     }
 
+    @Override
+    @Transactional
+    public QuizResponse updateQuizById(Integer id, QuizRequest newQuiz) {
+        Set<Integer> uniqueAnswerIndices = getUniqueAnswerIndices(newQuiz.answerIndices());
+
+        Quiz currQuiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        if (!isQuizAuthor(currQuiz)) {
+            throw new QuizNotOwnedByUserException();
+        }
+
+        currQuiz.setTitle(newQuiz.title());
+        currQuiz.setText(newQuiz.text());
+        currQuiz.setOptions(newQuiz.options());
+        currQuiz.setAnswerIndices(uniqueAnswerIndices);
+
+        quizRepository.save(currQuiz);
+
+        return new QuizResponse(currQuiz.getId(), currQuiz.getTitle(), currQuiz.getText(), currQuiz.getOptions());
+    }
+
     private AppUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();

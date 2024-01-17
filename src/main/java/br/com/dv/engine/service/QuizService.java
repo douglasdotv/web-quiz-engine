@@ -19,4 +19,6 @@ public interface QuizService {
 
     void deleteQuizById(Integer id);
 
+    QuizResponse updateQuizById(Integer id, QuizRequest quiz);
+
 }

@@ -52,4 +52,11 @@ public class QuizController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<QuizResponse> updateQuizById(@PathVariable Integer id,
+                                                       @RequestBody @Valid QuizRequest request) {
+        QuizResponse response = quizService.updateQuizById(id, request);
+        return ResponseEntity.ok(response);
+    }
+
 }
