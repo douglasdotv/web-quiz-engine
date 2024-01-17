@@ -15,10 +15,10 @@ public interface QuizService {
 
     QuizResponse addQuiz(QuizRequest quiz);
 
-    AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer);
-
     void deleteQuizById(Integer id);
 
     QuizResponse updateQuizById(Integer id, QuizRequest quiz);
+
+    AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer);
 
 }

@@ -39,13 +39,6 @@ public class QuizController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{id}/solve")
-    public ResponseEntity<AnswerSubmissionResponse> submitAnswer(@PathVariable Integer id,
-                                                                 @RequestBody AnswerSubmissionRequest request) {
-        AnswerSubmissionResponse response = quizService.submitAnswer(id, request);
-        return ResponseEntity.ok(response);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteQuizById(@PathVariable Integer id) {
         quizService.deleteQuizById(id);
@@ -56,6 +49,13 @@ public class QuizController {
     public ResponseEntity<QuizResponse> updateQuizById(@PathVariable Integer id,
                                                        @RequestBody @Valid QuizRequest request) {
         QuizResponse response = quizService.updateQuizById(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/solve")
+    public ResponseEntity<AnswerSubmissionResponse> submitAnswer(@PathVariable Integer id,
+                                                                 @RequestBody AnswerSubmissionRequest request) {
+        AnswerSubmissionResponse response = quizService.submitAnswer(id, request);
         return ResponseEntity.ok(response);
     }
 

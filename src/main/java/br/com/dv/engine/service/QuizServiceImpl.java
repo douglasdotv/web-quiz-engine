@@ -73,20 +73,6 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer) {
-        Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
-
-        Set<Integer> correctAnswerIndices = quiz.getAnswerIndices();
-        Set<Integer> submittedAnswerIndices = getUniqueAnswerIndices(answer.answerIndices());
-
-        boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
-        String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
-
-        return new AnswerSubmissionResponse(isCorrect, feedback);
-    }
-
-    @Override
     @Transactional
     public void deleteQuizById(Integer id) {
         Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
@@ -119,6 +105,20 @@ public class QuizServiceImpl implements QuizService {
         return new QuizResponse(currQuiz.getId(), currQuiz.getTitle(), currQuiz.getText(), currQuiz.getOptions());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer) {
+        Quiz quiz = quizRepository.findById(id).orElseThrow(QuizNotFoundException::new);
+
+        Set<Integer> correctAnswerIndices = quiz.getAnswerIndices();
+        Set<Integer> submittedAnswerIndices = getUniqueAnswerIndices(answer.answerIndices());
+
+        boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
+        String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
+
+        return new AnswerSubmissionResponse(isCorrect, feedback);
+    }
+
     private AppUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();
@@ -140,13 +140,13 @@ public class QuizServiceImpl implements QuizService {
         return Collections.emptySet();
     }
 
-    private boolean verifyAnswer(Set<Integer> correctAnswerIndices, Set<Integer> submittedAnswerIndices) {
-        return correctAnswerIndices.equals(submittedAnswerIndices);
-    }
-
     private boolean isNotQuizAuthor(Quiz quiz) {
         AppUser authenticatedUser = getAuthenticatedUser();
         return !authenticatedUser.equals(quiz.getAuthor());
+    }
+
+    private boolean verifyAnswer(Set<Integer> correctAnswerIndices, Set<Integer> submittedAnswerIndices) {
+        return correctAnswerIndices.equals(submittedAnswerIndices);
     }
 
 }
