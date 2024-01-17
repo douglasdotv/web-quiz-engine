@@ -17,4 +17,6 @@ public interface QuizService {
 
     AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer);
 
+    void deleteQuizById(Integer id);
+
 }

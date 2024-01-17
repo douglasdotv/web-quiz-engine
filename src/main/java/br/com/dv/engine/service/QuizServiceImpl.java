@@ -8,6 +8,7 @@ import br.com.dv.engine.entity.AppUser;
 import br.com.dv.engine.entity.Quiz;
 import br.com.dv.engine.exception.DuplicateAnswerIndicesException;
 import br.com.dv.engine.exception.QuizNotFoundException;
+import br.com.dv.engine.exception.QuizNotOwnedByUserException;
 import br.com.dv.engine.repository.AppUserRepository;
 import br.com.dv.engine.repository.QuizRepository;
 import org.springframework.security.core.Authentication;
@@ -96,6 +97,24 @@ public class QuizServiceImpl implements QuizService {
         throw new QuizNotFoundException();
     }
 
+    @Override
+    @Transactional
+    public void deleteQuizById(Integer id) {
+        Optional<Quiz> quizOptional = quizRepository.findById(id);
+
+        if (quizOptional.isPresent()) {
+            Quiz quiz = quizOptional.get();
+
+            if (!isQuizAuthor(quiz)) {
+                throw new QuizNotOwnedByUserException();
+            }
+
+            quiz.getAuthor().removeQuiz(quiz);
+        } else {
+            throw new QuizNotFoundException();
+        }
+    }
+
     private AppUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();
@@ -122,6 +141,11 @@ public class QuizServiceImpl implements QuizService {
 
     private boolean verifyAnswer(Set<Integer> correctAnswerIndices, Set<Integer> submittedAnswerIndices) {
         return correctAnswerIndices.equals(submittedAnswerIndices);
+    }
+
+    private boolean isQuizAuthor(Quiz quiz) {
+        AppUser authenticatedUser = getAuthenticatedUser();
+        return authenticatedUser.equals(quiz.getAuthor());
     }
 
 }

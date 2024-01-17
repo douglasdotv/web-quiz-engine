@@ -44,6 +44,12 @@ public class QuizExceptionHandler {
         return getResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(QuizNotOwnedByUserException.class)
+    public ResponseEntity<CustomError> handleQuizNotOwnedByUser(QuizNotOwnedByUserException ex,
+                                                                HttpServletRequest request) {
+        return getResponseEntity(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
     private ResponseEntity<CustomError> getResponseEntity(HttpStatus status, String message,
                                                           HttpServletRequest request) {
         CustomError error = new CustomError(status, message, request.getRequestURI(), Instant.now());
