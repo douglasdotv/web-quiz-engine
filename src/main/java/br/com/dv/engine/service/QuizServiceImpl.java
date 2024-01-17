@@ -4,10 +4,15 @@ import br.com.dv.engine.dto.AnswerSubmissionRequest;
 import br.com.dv.engine.dto.AnswerSubmissionResponse;
 import br.com.dv.engine.dto.QuizRequest;
 import br.com.dv.engine.dto.QuizResponse;
+import br.com.dv.engine.entity.AppUser;
 import br.com.dv.engine.entity.Quiz;
 import br.com.dv.engine.exception.DuplicateAnswerIndicesException;
 import br.com.dv.engine.exception.QuizNotFoundException;
+import br.com.dv.engine.repository.AppUserRepository;
 import br.com.dv.engine.repository.QuizRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +24,14 @@ public class QuizServiceImpl implements QuizService {
 
     private static final String CORRECT_FEEDBACK = "Congratulations, you're right!";
     private static final String INCORRECT_FEEDBACK = "Wrong answer! Please try again.";
+    private static final String USER_NOT_FOUND_TEMPLATE = "User with e-mail %s not found.";
 
     private final QuizRepository quizRepository;
+    private final AppUserRepository userRepository;
 
-    public QuizServiceImpl(QuizRepository quizRepository) {
+    public QuizServiceImpl(QuizRepository quizRepository, AppUserRepository userRepository) {
         this.quizRepository = quizRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -53,6 +61,7 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     public QuizResponse addQuiz(QuizRequest quiz) {
         Set<Integer> uniqueAnswerIndices = getUniqueAnswerIndices(quiz.answerIndices());
+        AppUser authenticatedUser = getAuthenticatedUser();
 
         Quiz newQuiz = new Quiz();
 
@@ -60,6 +69,7 @@ public class QuizServiceImpl implements QuizService {
         newQuiz.setText(quiz.text());
         newQuiz.setOptions(quiz.options());
         newQuiz.setAnswerIndices(uniqueAnswerIndices);
+        authenticatedUser.addQuiz(newQuiz);
 
         quizRepository.save(newQuiz);
 
@@ -84,6 +94,19 @@ public class QuizServiceImpl implements QuizService {
         }
 
         throw new QuizNotFoundException();
+    }
+
+    private AppUser getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = authentication.getName();
+
+        Optional<AppUser> userOptional = userRepository.findByEmail(authenticatedEmail);
+
+        if (userOptional.isPresent()) {
+            return userOptional.get();
+        }
+
+        throw new UsernameNotFoundException(String.format(USER_NOT_FOUND_TEMPLATE, authenticatedEmail));
     }
 
     private Set<Integer> getUniqueAnswerIndices(List<Integer> answerIndices) {
