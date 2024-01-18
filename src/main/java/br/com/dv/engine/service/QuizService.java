@@ -16,4 +16,6 @@ public interface QuizService {
 
     AnswerSubmissionResponse submitAnswer(Integer id, AnswerSubmissionRequest answer);
 
+    PaginatedCompletedQuizResponse getCompletedQuizzes(Integer page);
+
 }

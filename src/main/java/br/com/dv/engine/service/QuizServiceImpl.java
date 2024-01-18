@@ -132,6 +132,21 @@ public class QuizServiceImpl implements QuizService {
         return new AnswerSubmissionResponse(isCorrect, feedback);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedCompletedQuizResponse getCompletedQuizzes(Integer page) {
+        AppUser authenticatedUser = getAuthenticatedUser();
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
+        Page<QuizCompletion> quizzes = completionRepository.findAllByUserOrderByCompletedAtDesc(
+                authenticatedUser,
+                pageable
+        );
+
+        return ResponseBuilder.buildPaginatedCompletedQuizResponse(quizzes);
+    }
+
     private AppUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();

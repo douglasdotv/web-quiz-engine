@@ -54,4 +54,12 @@ public class QuizController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/completed")
+    public ResponseEntity<PaginatedCompletedQuizResponse> getCompletedQuizzes(
+            @RequestParam(defaultValue = "0") Integer page
+    ) {
+        PaginatedCompletedQuizResponse response = quizService.getCompletedQuizzes(page);
+        return ResponseEntity.ok(response);
+    }
+
 }

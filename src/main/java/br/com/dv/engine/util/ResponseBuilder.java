@@ -1,8 +1,11 @@
 package br.com.dv.engine.util;
 
+import br.com.dv.engine.dto.CompletedQuizResponse;
+import br.com.dv.engine.dto.PaginatedCompletedQuizResponse;
 import br.com.dv.engine.dto.PaginatedQuizResponse;
 import br.com.dv.engine.dto.QuizResponse;
 import br.com.dv.engine.entity.Quiz;
+import br.com.dv.engine.entity.QuizCompletion;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -31,6 +34,21 @@ public final class ResponseBuilder {
                 quizzes.getSize(),
                 quizzes.isEmpty(),
                 quizzes.getPageable(),
+                content
+        );
+    }
+
+    public static PaginatedCompletedQuizResponse buildPaginatedCompletedQuizResponse(Page<QuizCompletion> quizzes) {
+        List<CompletedQuizResponse> content = quizzes.getContent().stream()
+                .map(completion -> new CompletedQuizResponse(completion.getQuiz().getId(), completion.getCompletedAt()))
+                .toList();
+
+        return new PaginatedCompletedQuizResponse(
+                quizzes.getTotalPages(),
+                quizzes.getTotalElements(),
+                quizzes.isLast(),
+                quizzes.isFirst(),
+                quizzes.isEmpty(),
                 content
         );
     }
