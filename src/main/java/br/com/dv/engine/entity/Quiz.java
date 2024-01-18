@@ -34,4 +34,12 @@ public class Quiz {
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser author;
 
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
+    private Set<QuizCompletion> quizCompletions;
+
+    public void addQuizCompletion(QuizCompletion quizCompletion) {
+        this.quizCompletions.add(quizCompletion);
+        quizCompletion.setQuiz(this);
+    }
+
 }
