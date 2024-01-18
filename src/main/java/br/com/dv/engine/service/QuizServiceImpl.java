@@ -1,9 +1,6 @@
 package br.com.dv.engine.service;
 
-import br.com.dv.engine.dto.AnswerSubmissionRequest;
-import br.com.dv.engine.dto.AnswerSubmissionResponse;
-import br.com.dv.engine.dto.QuizRequest;
-import br.com.dv.engine.dto.QuizResponse;
+import br.com.dv.engine.dto.*;
 import br.com.dv.engine.entity.AppUser;
 import br.com.dv.engine.entity.Quiz;
 import br.com.dv.engine.exception.DuplicateAnswerIndicesException;
@@ -11,18 +8,25 @@ import br.com.dv.engine.exception.QuizNotFoundException;
 import br.com.dv.engine.exception.QuizNotOwnedByUserException;
 import br.com.dv.engine.repository.AppUserRepository;
 import br.com.dv.engine.repository.QuizRepository;
+import br.com.dv.engine.util.ResponseBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class QuizServiceImpl implements QuizService {
 
+    private static final int PAGE_SIZE = 10;
     private static final String CORRECT_FEEDBACK = "Congratulations, you're right!";
     private static final String INCORRECT_FEEDBACK = "Wrong answer! Please try again.";
     private static final String USER_NOT_FOUND_TEMPLATE = "User with e-mail %s not found.";
@@ -37,12 +41,10 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> getAllQuizzes() {
-        Iterable<Quiz> quizzes = quizRepository.findAll();
-
-        return StreamSupport.stream(quizzes.spliterator(), false)
-                .map(quiz -> new QuizResponse(quiz.getId(), quiz.getTitle(), quiz.getText(), quiz.getOptions()))
-                .toList();
+    public PaginatedQuizResponse getAllQuizzes(Integer page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<Quiz> quizzes = quizRepository.findAll(pageable);
+        return ResponseBuilder.buildPaginatedQuizResponse(quizzes);
     }
 
     @Override

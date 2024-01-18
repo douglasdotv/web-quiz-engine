@@ -1,15 +1,10 @@
 package br.com.dv.engine.service;
 
-import br.com.dv.engine.dto.AnswerSubmissionRequest;
-import br.com.dv.engine.dto.AnswerSubmissionResponse;
-import br.com.dv.engine.dto.QuizRequest;
-import br.com.dv.engine.dto.QuizResponse;
-
-import java.util.List;
+import br.com.dv.engine.dto.*;
 
 public interface QuizService {
 
-    List<QuizResponse> getAllQuizzes();
+    PaginatedQuizResponse getAllQuizzes(Integer page);
 
     QuizResponse getQuizById(Integer id);
 

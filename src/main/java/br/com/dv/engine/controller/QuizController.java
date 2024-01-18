@@ -1,15 +1,10 @@
 package br.com.dv.engine.controller;
 
-import br.com.dv.engine.dto.AnswerSubmissionRequest;
-import br.com.dv.engine.dto.AnswerSubmissionResponse;
-import br.com.dv.engine.dto.QuizRequest;
-import br.com.dv.engine.dto.QuizResponse;
+import br.com.dv.engine.dto.*;
 import br.com.dv.engine.service.QuizService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/quizzes")
 @RestController
@@ -22,8 +17,8 @@ public class QuizController {
     }
 
     @GetMapping
-    public ResponseEntity<List<QuizResponse>> getAllQuizzes() {
-        List<QuizResponse> response = quizService.getAllQuizzes();
+    public ResponseEntity<PaginatedQuizResponse> getAllQuizzes(@RequestParam(defaultValue = "0") Integer page) {
+        PaginatedQuizResponse response = quizService.getAllQuizzes(page);
         return ResponseEntity.ok(response);
     }
 
