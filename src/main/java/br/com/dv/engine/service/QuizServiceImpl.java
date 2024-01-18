@@ -3,10 +3,12 @@ package br.com.dv.engine.service;
 import br.com.dv.engine.dto.*;
 import br.com.dv.engine.entity.AppUser;
 import br.com.dv.engine.entity.Quiz;
+import br.com.dv.engine.entity.QuizCompletion;
 import br.com.dv.engine.exception.DuplicateAnswerIndicesException;
 import br.com.dv.engine.exception.QuizNotFoundException;
 import br.com.dv.engine.exception.QuizNotOwnedByUserException;
 import br.com.dv.engine.repository.AppUserRepository;
+import br.com.dv.engine.repository.QuizCompletionRepository;
 import br.com.dv.engine.repository.QuizRepository;
 import br.com.dv.engine.util.ResponseBuilder;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -33,10 +36,14 @@ public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
     private final AppUserRepository userRepository;
+    private final QuizCompletionRepository completionRepository;
 
-    public QuizServiceImpl(QuizRepository quizRepository, AppUserRepository userRepository) {
+    public QuizServiceImpl(QuizRepository quizRepository,
+                           AppUserRepository userRepository,
+                           QuizCompletionRepository completionRepository) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
+        this.completionRepository = completionRepository;
     }
 
     @Override
@@ -118,6 +125,10 @@ public class QuizServiceImpl implements QuizService {
         boolean isCorrect = verifyAnswer(correctAnswerIndices, submittedAnswerIndices);
         String feedback = isCorrect ? CORRECT_FEEDBACK : INCORRECT_FEEDBACK;
 
+        if (isCorrect) {
+            saveQuizCompletion(quiz);
+        }
+
         return new AnswerSubmissionResponse(isCorrect, feedback);
     }
 
@@ -149,6 +160,18 @@ public class QuizServiceImpl implements QuizService {
 
     private boolean verifyAnswer(Set<Integer> correctAnswerIndices, Set<Integer> submittedAnswerIndices) {
         return correctAnswerIndices.equals(submittedAnswerIndices);
+    }
+
+    private void saveQuizCompletion(Quiz quiz) {
+        AppUser authenticatedUser = getAuthenticatedUser();
+
+        QuizCompletion quizCompletion = new QuizCompletion();
+
+        quizCompletion.setCompletedAt(LocalDateTime.now());
+        quizCompletion.setUser(authenticatedUser);
+        quiz.addQuizCompletion(quizCompletion);
+
+        completionRepository.save(quizCompletion);
     }
 
 }
